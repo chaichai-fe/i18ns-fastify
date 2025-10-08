@@ -1,6 +1,7 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import { FastifyInstance } from 'fastify'
 import { TranslationsService } from './service'
 import { CreateTranslationDto, Translation } from './types'
+import type { TranslationContent } from '../db/schema'
 
 const translationsService = new TranslationsService()
 
@@ -385,12 +386,9 @@ export async function translationsRoutes(fastify: FastifyInstance) {
 
   // Export translations as JSON (requires authentication)
   fastify.get<{
+    Params: { id: number }
     Reply: {
-      200: {
-        statusCode: number
-        message: string
-        result: any
-      }
+      200: Translation
       401: {
         statusCode: number
         message: string
@@ -401,7 +399,7 @@ export async function translationsRoutes(fastify: FastifyInstance) {
       }
     }
   }>(
-    '/export/json',
+    '/export/json/:id',
     {
       preHandler: async (request, reply) => {
         try {
@@ -441,11 +439,10 @@ export async function translationsRoutes(fastify: FastifyInstance) {
         },
         response: {
           200: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                translations: { type: 'object' },
+            type: 'object',
+            properties: {
+              transitions: {
+                type: 'object',
               },
             },
           },
@@ -466,9 +463,10 @@ export async function translationsRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    async (_, reply) => {
+    async (request, reply) => {
       try {
-        const translations = await translationsService.getTranslationsAsJson()
+        const { id } = request.params
+        const result = await translationsService.findById(id)
 
         reply.header(
           'Content-Disposition',
@@ -476,11 +474,7 @@ export async function translationsRoutes(fastify: FastifyInstance) {
         )
         reply.header('Content-Type', 'application/json')
 
-        return reply.status(200).send({
-          statusCode: 200,
-          message: 'Export successful',
-          result: translations,
-        })
+        return reply.status(200).send(result[0])
       } catch (error) {
         return reply.status(500).send({
           statusCode: 500,

@@ -61,6 +61,21 @@ async function startApplication() {
             description: 'Development server',
           },
         ],
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: 'http',
+              scheme: 'bearer',
+              bearerFormat: 'JWT',
+              description: '请输入 JWT token（不需要加 Bearer 前缀）',
+            },
+          },
+        },
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
       },
     })
 
