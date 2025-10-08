@@ -82,12 +82,16 @@ async function startApplication() {
     await fastify.register(swaggerUi, {
       routePrefix: '/docs',
       uiConfig: {
-        docExpansion: 'full',
+        docExpansion: 'list',
         deepLinking: false,
+        defaultModelsExpandDepth: 1,
+        displayRequestDuration: true,
+        filter: true,
+        tryItOutEnabled: true,
       },
       staticCSP: true,
-      transformStaticCSP: (header) => header,
-    })
+      transformStaticCSP: (header: string) => header,
+    } as any)
 
     // Register routes
     await fastify.register(authRoutes, { prefix: '/api/auth' })

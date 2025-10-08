@@ -441,9 +441,11 @@ export async function translationsRoutes(fastify: FastifyInstance) {
           200: {
             type: 'object',
             properties: {
-              transitions: {
-                type: 'object',
-              },
+              id: { type: 'number' },
+              name: { type: 'string' },
+              description: { type: 'string' },
+              business_tag_id: { type: 'number' },
+              translations: { type: 'object' },
             },
           },
           401: {
