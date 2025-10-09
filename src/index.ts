@@ -88,6 +88,8 @@ async function startApplication() {
         displayRequestDuration: true,
         filter: true,
         tryItOutEnabled: true,
+        // 持久化授权
+        persistAuthorization: true
       },
       staticCSP: true,
       transformStaticCSP: (header: string) => header,
