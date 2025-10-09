@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { drizzle } from 'drizzle-orm/mysql2'
 
 const connectionString = process.env.DATABASE_URL

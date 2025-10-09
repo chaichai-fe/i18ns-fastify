@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import { ENV } from './config/env'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
@@ -44,7 +44,7 @@ async function startApplication() {
 
     // Register JWT
     await fastify.register(jwt, {
-      secret: process.env.JWT_SECRET!,
+      secret: ENV.JWT_SECRET,
     })
 
     // Register Swagger
@@ -57,8 +57,8 @@ async function startApplication() {
         },
         servers: [
           {
-            url: `http://localhost:${process.env.PORT || 3000}`,
-            description: 'Development server',
+            url: `http://localhost:${ENV.PORT}`,
+            description: ENV.NODE_ENV === 'production' ? 'Production server' : 'Development server',
           },
         ],
         components: {
@@ -109,14 +109,12 @@ async function startApplication() {
     })
 
     // Start the server
-    const port = Number(process.env.PORT) || 3000
-    const host = process.env.HOST || '0.0.0.0'
-
-    await fastify.listen({ port, host })
+    await fastify.listen({ port: ENV.PORT, host: ENV.HOST })
 
     console.log('✅ Database connection validation passed')
-    console.log(`🚀 Translation API is running: http://${host}:${port}`)
-    console.log(`📚 API Documentation: http://${host}:${port}/docs`)
+    console.log(`🚀 Translation API is running: http://${ENV.HOST}:${ENV.PORT}`)
+    console.log(`📚 API Documentation: http://${ENV.HOST}:${ENV.PORT}/docs`)
+    console.log(`🌍 Environment: ${ENV.NODE_ENV}`)
   } catch (error) {
     console.error('💥 Application startup failed:', error)
     process.exit(1)

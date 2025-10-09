@@ -13,6 +13,8 @@
 - [生产部署](#生产部署)
 - [API 接口文档](#api-接口文档)
 - [开发脚本](#开发脚本)
+- [常见问题](#常见问题)
+- [项目迁移说明](#项目迁移说明)
 
 ## 项目简介
 
@@ -24,6 +26,8 @@
 - 📝 **翻译内容管理**：创建、查询、更新和删除翻译内容
 - 📤 **翻译导出**：支持将翻译内容导出为 JSON 格式
 - 📚 **API 文档**：集成 Swagger UI，访问 `/docs` 查看完整 API 文档
+- 🔧 **多环境配置**：支持开发和生产环境独立配置
+- 🛡️ **启动验证**：应用启动时自动验证数据库连接和配置
 
 ## 技术栈
 
@@ -60,8 +64,10 @@ i18ns-fastify/
 │   │   ├── routes.ts            # 翻译路由（CRUD + 导出）
 │   │   ├── service.ts           # 翻译服务逻辑
 │   │   └── types.ts             # 翻译类型定义
+│   ├── config/                  # 配置模块
+│   │   └── env.ts               # 环境变量配置管理
 │   ├── db/                      # 数据库配置
-│   │   ├── connection.ts        # 数据库连接配置
+│   │   ├── connection.ts        # 数据库连接验证
 │   │   ├── index.ts             # 数据库实例导出
 │   │   └── schema.ts            # 数据库表结构定义
 │   └── index.ts                 # 应用入口文件
@@ -71,7 +77,9 @@ i18ns-fastify/
 ├── drizzle.config.ts            # Drizzle ORM 配置
 ├── package.json                 # 项目依赖配置
 ├── tsconfig.json                # TypeScript 配置
-├── env.example                  # 环境变量示例
+├── env.example                  # 环境变量示例文件
+├── .env.development             # 开发环境配置（需创建）
+├── .env.production              # 生产环境配置（需创建）
 └── README.md                    # 项目说明文档
 ```
 
@@ -83,10 +91,14 @@ i18ns-fastify/
 ┌─────────────────────────────────────────────────────────┐
 │                      Fastify 应用                        │
 ├─────────────────────────────────────────────────────────┤
+│  Config 层 (配置管理)                                   │
+│  └─ 环境变量管理 (支持多环境配置)                        │
+├─────────────────────────────────────────────────────────┤
 │  Middleware 层                                          │
 │  ├─ CORS (跨域处理)                                     │
 │  ├─ JWT 认证                                            │
-│  └─ Swagger 文档                                        │
+│  ├─ Swagger 文档                                        │
+│  └─ 数据库连接验证                                       │
 ├─────────────────────────────────────────────────────────┤
 │  Routes 层 (路由)                                       │
 │  ├─ /api/auth          (认证路由)                       │
@@ -104,6 +116,25 @@ i18ns-fastify/
 │  └─ Drizzle ORM + MySQL                                │
 └─────────────────────────────────────────────────────────┘
 ```
+
+### 核心特性
+
+#### 🔧 多环境配置管理
+
+项目支持基于 `NODE_ENV` 的多环境配置系统：
+
+- **开发环境**：自动加载 `.env.development`
+- **生产环境**：自动加载 `.env.production`
+- **类型安全**：所有环境变量通过 TypeScript 类型检查
+- **启动验证**：应用启动时自动验证配置文件和数据库连接
+
+#### 🔐 数据库连接验证
+
+应用启动时自动执行数据库连接验证，确保：
+- 数据库配置正确
+- 网络连接正常
+- 数据库服务可用
+- 如果验证失败，应用将自动退出并显示错误信息
 
 ## 数据库设计
 
@@ -208,25 +239,36 @@ i18ns-fastify/
 
 3. **配置环境变量**
 
-   复制环境变量示例文件并修改配置：
+   项目支持多环境配置，根据不同环境创建对应的配置文件：
 
+   **开发环境配置：**
    ```bash
-   cp env.example .env
+   cp env.example .env.development
    ```
 
-   编辑 `.env` 文件，填入你的配置：
+   编辑 `.env.development` 文件，填入你的开发环境配置：
 
    ```env
    # 数据库配置
-   DATABASE_URL=mysql://用户名:密码@数据库地址:3306/数据库名
+   DATABASE_URL="mysql://用户名:密码@localhost:3306/数据库名"
 
    # JWT 密钥（请使用强密码）
-   JWT_SECRET=your-super-secret-jwt-key-here
+   JWT_SECRET="your-super-secret-jwt-key-here"
 
    # 服务器配置
    PORT=3000
    HOST=0.0.0.0
+
+   # 环境标识
+   NODE_ENV=development
    ```
+
+   **生产环境配置（可选）：**
+   ```bash
+   cp env.example .env.production
+   ```
+
+   编辑 `.env.production` 文件，填入生产环境配置（使用更强的密钥和生产数据库）。
 
 4. **初始化数据库**
 
@@ -257,15 +299,13 @@ i18ns-fastify/
    pnpm run dev
    ```
 
-2. **查看数据库**（使用 Drizzle Studio）
+   应用会自动：
+   - 加载 `.env.development` 配置文件
+   - 验证数据库连接
+   - 启动 Fastify 服务器
+   - 监听文件变化并自动重启
 
-   ```bash
-   pnpm run db:studio
-   ```
-
-   在浏览器中打开 Drizzle Studio 可视化界面查看和管理数据。
-
-3. **修改数据库结构**
+2. **修改数据库结构**
 
    - 编辑 `src/db/schema.ts` 文件
    - 生成迁移文件：
@@ -286,7 +326,9 @@ i18ns-fastify/
 
 - 应用使用 `pino-pretty` 进行日志美化输出
 - 所有 API 请求和响应都会在控制台显示
+- 启动时会显示环境配置加载信息和数据库连接状态
 - 使用 Swagger UI (`/docs`) 测试 API 接口
+- 控制台会显示彩色日志，便于快速定位问题
 
 ## 生产部署
 
@@ -302,15 +344,33 @@ i18ns-fastify/
 
 2. **配置生产环境变量**
 
-   创建 `.env.production` 文件：
+   创建 `.env.production` 文件（从示例文件复制）：
+
+   ```bash
+   cp env.example .env.production
+   ```
+
+   编辑 `.env.production` 文件：
 
    ```env
-   DATABASE_URL=mysql://生产用户名:生产密码@生产数据库地址:3306/i18n_production
-   JWT_SECRET=生产环境超强密钥（至少32位随机字符）
+   # 数据库配置
+   DATABASE_URL="mysql://生产用户名:生产密码@生产数据库地址:3306/i18n_production"
+
+   # JWT 密钥（使用强随机字符串，至少32位）
+   JWT_SECRET="生产环境超强密钥-使用随机字符串"
+
+   # 服务器配置
    PORT=3000
    HOST=0.0.0.0
+
+   # 环境标识
    NODE_ENV=production
    ```
+
+   > **安全提示**：生产环境的 `JWT_SECRET` 应使用强随机字符串，可以使用以下命令生成：
+   > ```bash
+   > openssl rand -base64 32
+   > ```
 
 ### 部署步骤
 
@@ -326,14 +386,15 @@ i18ns-fastify/
 
 2. **运行数据库迁移**
 
+   应用会在启动时自动加载 `.env.production`，执行迁移：
+
    ```bash
-   export DATABASE_URL="mysql://生产用户名:生产密码@生产数据库地址:3306/i18n_production"
-   pnpm run db:push
+   NODE_ENV=production pnpm run db:push
    ```
 
-   或使用迁移方式：
+   或使用迁移方式（推荐生产环境）：
    ```bash
-   pnpm run db:migrate
+   NODE_ENV=production pnpm run db:migrate
    ```
 
 3. **启动生产服务器**
@@ -341,6 +402,11 @@ i18ns-fastify/
    ```bash
    NODE_ENV=production pnpm start
    ```
+
+   应用会自动：
+   - 加载 `.env.production` 配置文件
+   - 验证数据库连接
+   - 启动服务器
 
 4. **使用 PM2 进行进程管理**（推荐）
 
@@ -632,13 +698,12 @@ curl -X GET "http://localhost:3000/api/translations/export/json?business_tag_id=
 
 | 命令 | 说明 |
 |------|------|
-| `pnpm run dev` | 启动开发服务器（热重载） |
-| `pnpm run build` | 构建生产版本 |
-| `pnpm start` | 启动生产服务器 |
+| `pnpm run dev` | 启动开发服务器（热重载，自动加载 `.env.development`） |
+| `pnpm run build` | 构建生产版本（编译 TypeScript 到 `dist/` 目录） |
+| `pnpm start` | 启动生产服务器（需要先 build） |
 | `pnpm run db:generate` | 生成数据库迁移文件 |
 | `pnpm run db:migrate` | 运行数据库迁移 |
-| `pnpm run db:push` | 直接推送 schema 到数据库 |
-| `pnpm run db:studio` | 打开 Drizzle Studio 可视化界面 |
+| `pnpm run db:push` | 直接推送 schema 到数据库（开发环境推荐） |
 
 ### 开发流程建议
 
@@ -649,42 +714,63 @@ git pull
 # 2. 安装/更新依赖
 pnpm install
 
-# 3. 同步数据库结构（开发环境）
+# 3. 确保环境配置文件存在
+# 如果没有 .env.development，从示例创建
+cp env.example .env.development
+
+# 4. 同步数据库结构（开发环境）
 pnpm run db:push
 
-# 4. 启动开发服务器
+# 5. 启动开发服务器
 pnpm run dev
 
-# 5. 修改代码后，服务器会自动重启
-
-# 6. 需要查看数据时，打开 Drizzle Studio
-pnpm run db:studio
+# 6. 修改代码后，服务器会自动重启
+# 控制台会显示环境加载和数据库连接状态
 ```
 
 ## 常见问题
 
-### 1. 数据库连接失败
+### 1. 环境配置文件加载失败
+
+**问题：** 启动时提示 "加载环境文件失败" 或 "环境变量 xxx 未设置"
+
+**解决方案：**
+- 确认已创建对应的环境配置文件：
+  - 开发环境：`.env.development`
+  - 生产环境：`.env.production`
+- 可以从 `env.example` 复制：
+  ```bash
+  cp env.example .env.development
+  ```
+- 检查配置文件中是否包含所有必需的环境变量
+- 确认 `NODE_ENV` 环境变量设置正确
+
+### 2. 数据库连接失败
 
 **问题：** 启动时提示 "Database connection validation failed"
 
 **解决方案：**
-- 检查 `.env` 文件中的 `DATABASE_URL` 配置是否正确
+- 检查环境配置文件（`.env.development` 或 `.env.production`）中的 `DATABASE_URL` 是否正确
 - 确认 MySQL 服务是否正常运行
 - 检查数据库用户是否有足够的权限
 - 验证数据库名称是否已创建
+- 注意 `DATABASE_URL` 需要用引号包裹，例如：
+  ```env
+  DATABASE_URL="mysql://user:pass@localhost:3306/dbname"
+  ```
 
-### 2. 端口被占用
+### 3. 端口被占用
 
 **问题：** 端口 3000 已被占用
 
 **解决方案：**
-- 修改 `.env` 文件中的 `PORT` 配置
-- 或者手动停止占用 3000 端口的进程：
+- 修改环境配置文件中的 `PORT` 配置
+- 或者手动停止占用 3000 端口的进程（dev 脚本会自动执行）：
   ```bash
   lsof -ti:3000 | xargs kill -9
   ```
 
-### 3. JWT Token 无效
+### 4. JWT Token 无效
 
 **问题：** API 请求返回 401 Unauthorized
 
@@ -692,6 +778,7 @@ pnpm run db:studio
 - 确认 `Authorization` 头格式为：`Bearer YOUR_TOKEN`
 - Token 可能已过期，需要重新登录
 - 检查生产环境和开发环境的 `JWT_SECRET` 是否一致
+- 如果更改了 `JWT_SECRET`，需要重新登录获取新 token
 
 ## 项目迁移说明
 
@@ -700,6 +787,25 @@ pnpm run db:studio
 - ✅ 完全一致的 API 接口和功能
 - ✅ 相同的业务逻辑和数据验证
 - ✅ Fastify 的最佳实践和性能优化
+
+### 新增特性
+
+相比原版本，本项目新增了以下特性：
+
+1. **多环境配置系统**
+   - 支持根据 `NODE_ENV` 自动加载不同的配置文件
+   - 类型安全的环境变量访问
+   - 启动时自动验证配置完整性
+
+2. **数据库连接验证**
+   - 应用启动前验证数据库连接
+   - 连接失败时自动退出并显示错误信息
+   - 避免在数据库不可用时启动应用
+
+3. **改进的开发体验**
+   - 自动终止占用端口的进程
+   - 彩色日志输出，便于调试
+   - 清晰的启动信息和状态提示
 
 ## 贡献指南
 

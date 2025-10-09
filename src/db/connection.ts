@@ -1,5 +1,3 @@
-import 'dotenv/config'
-import { drizzle } from 'drizzle-orm/mysql2'
 import mysql from 'mysql2/promise'
 
 /**
@@ -8,6 +6,8 @@ import mysql from 'mysql2/promise'
  */
 export async function validateDatabaseConnection(): Promise<boolean> {
   const connectionString = process.env.DATABASE_URL
+
+  console.log('🔄 Validating database connection...', connectionString)
 
   if (!connectionString) {
     console.error('❌ DATABASE_URL environment variable is not set')
@@ -34,20 +34,3 @@ export async function validateDatabaseConnection(): Promise<boolean> {
   }
 }
 
-/**
- * Initialize database connection
- * @returns Configured drizzle instance
- */
-export function initializeDatabase() {
-  const connectionString = process.env.DATABASE_URL
-
-  if (!connectionString) {
-    throw new Error('DATABASE_URL environment variable is not set')
-  }
-
-  console.log('🔄 Initializing database connection...')
-  const db = drizzle(connectionString)
-  console.log('✅ Database connection initialization successful')
-
-  return db
-}
