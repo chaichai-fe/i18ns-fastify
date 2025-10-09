@@ -519,18 +519,6 @@ i18ns-fastify/
    docker-compose up -d
    ```
 
-#### 方式三：云平台部署
-
-##### Vercel / Railway / Render
-
-这些平台通常需要：
-
-1. 连接 Git 仓库
-2. 配置环境变量（在平台控制台）
-3. 设置构建命令：`pnpm run build`
-4. 设置启动命令：`pnpm start`
-
-**注意：** 需要单独准备 MySQL 数据库（如使用 PlanetScale、AWS RDS 等）。
 
 ### 数据库迁移最佳实践
 

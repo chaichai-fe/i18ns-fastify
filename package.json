@@ -10,8 +10,8 @@
     "build": "tsc",
     "start": "NODE_ENV=production node dist/index.js",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push"
+    "db:migrate": "NODE_ENV=production drizzle-kit migrate",
+    "db:push": "NODE_ENV=development drizzle-kit push"
   },
   "packageManager": "pnpm@8.15.0",
   "dependencies": {

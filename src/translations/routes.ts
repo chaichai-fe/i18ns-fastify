@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { TranslationsService } from './service'
 import { CreateTranslationDto, Translation } from './types'
-import type { TranslationContent } from '../db/schema'
 
 const translationsService = new TranslationsService()
 
