@@ -56,3 +56,11 @@ export const userTable = mysqlTable('users', {
   password: varchar({ length: 255 }).notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
+
+export const apiLogTable = mysqlTable('api_logs', {
+  id: int().primaryKey().autoincrement(),
+  path: varchar({ length: 500 }).notNull(),
+  method: varchar({ length: 10 }).notNull(),
+  operator: varchar({ length: 255 }),
+  operatedAt: timestamp('operated_at').notNull().defaultNow(),
+})

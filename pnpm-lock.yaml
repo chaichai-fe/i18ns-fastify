@@ -38,6 +38,9 @@ importers:
       fastify:
         specifier: ^5.1.0
         version: 5.6.1
+      fastify-plugin:
+        specifier: ^5.1.0
+        version: 5.1.0
       mysql2:
         specifier: ^3.14.5
         version: 3.15.1
@@ -1299,7 +1302,7 @@ snapshots:
   abstract-logging@2.0.1: {}
 
   ajv-formats@3.0.1(ajv@8.17.1):
-    dependencies:
+    optionalDependencies:
       ajv: 8.17.1
 
   ajv@8.17.1:
@@ -1385,7 +1388,7 @@ snapshots:
       - supports-color
 
   drizzle-orm@0.44.6(@planetscale/database@1.19.0)(mysql2@3.15.1):
-    dependencies:
+    optionalDependencies:
       '@planetscale/database': 1.19.0
       mysql2: 3.15.1
 

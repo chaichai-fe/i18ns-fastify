@@ -41,4 +41,3 @@ export const validateDatabasePlugin: FastifyPluginAsync<DatabasePluginOptions> =
     }
 }
 
-

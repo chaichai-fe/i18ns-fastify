@@ -8,6 +8,20 @@
       "when": 1759978709664,
       "tag": "0000_free_giant_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1760337358814,
+      "tag": "0001_wet_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1760337959714,
+      "tag": "0002_dapper_firebrand",
+      "breakpoints": true
     }
   ]
 }
