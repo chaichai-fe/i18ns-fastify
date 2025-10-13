@@ -4,11 +4,13 @@ import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
-import { validateDatabasePlugin } from './db/validate_db_plugin'
+import { validateDatabasePlugin } from './plugins/validate_db_plugin'
+import { apiLogPlugin } from './plugins/api_log_plugin'
 import { authRoutes } from './auth/routes'
 import { businessTagRoutes } from './business-tag/routes'
 import { langTagRoutes } from './lang-tag/routes'
 import { translationsRoutes } from './translations/routes'
+import { apiLogRoutes } from './api-log/routes'
 
 // 应用启动函数
 async function startApplication() {
@@ -27,6 +29,14 @@ async function startApplication() {
 
     // 注册数据库验证插件
     await fastify.register(validateDatabasePlugin)
+
+    // 注册 API 日志记录插件
+    await fastify.register(apiLogPlugin, {
+      // 排除登录和注册接口（默认值，可根据需要修改）
+      excludePaths: ['/api/auth/login', '/api/auth/register'],
+      // 记录的 HTTP 方法（默认值，可根据需要修改）
+      methodsToLog: ['POST', 'PUT', 'PATCH', 'DELETE'],
+    })
 
     // Register CORS
     await fastify.register(cors, {
@@ -93,6 +103,7 @@ async function startApplication() {
     await fastify.register(businessTagRoutes, { prefix: '/api/business-tags' })
     await fastify.register(langTagRoutes, { prefix: '/api/lang-tags' })
     await fastify.register(translationsRoutes, { prefix: '/api/translations' })
+    await fastify.register(apiLogRoutes, { prefix: '/api/logs' })
 
     // Root route
     fastify.get('/', () => {

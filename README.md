@@ -25,9 +25,11 @@
 - 🌍 **语言标签管理**：管理系统支持的多语言
 - 📝 **翻译内容管理**：创建、查询、更新和删除翻译内容
 - 📤 **翻译导出**：支持将翻译内容导出为 JSON 格式
+- 📊 **API 日志记录**：自动记录所有 API 操作，支持操作人追踪
 - 📚 **API 文档**：集成 Swagger UI，访问 `/docs` 查看完整 API 文档
 - 🔧 **多环境配置**：支持开发和生产环境独立配置
 - 🛡️ **启动验证**：应用启动时自动验证数据库连接和配置
+- 🔌 **插件化架构**：使用 Fastify 插件系统，模块化设计
 
 ## 技术栈
 
@@ -38,8 +40,10 @@
 | **数据库** | [MySQL](https://www.mysql.com/) - 关系型数据库 |
 | **ORM** | [Drizzle ORM](https://orm.drizzle.team/) - 轻量级的 TypeScript ORM |
 | **认证** | [JWT](https://jwt.io/) - JSON Web Token 认证 |
+| **密码加密** | [bcryptjs](https://github.com/dcodeIO/bcrypt.js) - 安全的密码哈希 |
 | **API 文档** | [Swagger/OpenAPI](https://swagger.io/) - 自动生成的 API 文档 |
 | **包管理器** | [pnpm](https://pnpm.io/) - 高效的包管理工具 |
+| **插件系统** | [fastify-plugin](https://github.com/fastify/fastify-plugin) - Fastify 插件包装器 |
 
 ## 项目架构
 
@@ -64,10 +68,16 @@ i18ns-fastify/
 │   │   ├── routes.ts            # 翻译路由（CRUD + 导出）
 │   │   ├── service.ts           # 翻译服务逻辑
 │   │   └── types.ts             # 翻译类型定义
+│   ├── api-log/                 # API 日志模块
+│   │   ├── routes.ts            # 日志查询路由
+│   │   ├── service.ts           # 日志服务逻辑
+│   │   └── types.ts             # 日志类型定义
+│   ├── plugins/                 # Fastify 插件
+│   │   ├── validate_db_plugin.ts    # 数据库验证插件
+│   │   └── api_log_plugin.ts        # API 日志记录插件
 │   ├── config/                  # 配置模块
 │   │   └── env.ts               # 环境变量配置管理
 │   ├── db/                      # 数据库配置
-│   │   ├── connection.ts        # 数据库连接验证
 │   │   ├── index.ts             # 数据库实例导出
 │   │   └── schema.ts            # 数据库表结构定义
 │   └── index.ts                 # 应用入口文件
@@ -94,23 +104,28 @@ i18ns-fastify/
 │  Config 层 (配置管理)                                   │
 │  └─ 环境变量管理 (支持多环境配置)                        │
 ├─────────────────────────────────────────────────────────┤
+│  Plugin 层 (插件)                                       │
+│  ├─ 数据库验证插件 (启动时验证数据库连接)                │
+│  └─ API 日志记录插件 (自动记录 API 操作)                 │
+├─────────────────────────────────────────────────────────┤
 │  Middleware 层                                          │
 │  ├─ CORS (跨域处理)                                     │
 │  ├─ JWT 认证                                            │
-│  ├─ Swagger 文档                                        │
-│  └─ 数据库连接验证                                       │
+│  └─ Swagger 文档                                        │
 ├─────────────────────────────────────────────────────────┤
 │  Routes 层 (路由)                                       │
 │  ├─ /api/auth          (认证路由)                       │
 │  ├─ /api/business-tags (业务标签路由)                   │
 │  ├─ /api/lang-tags     (语言标签路由)                   │
-│  └─ /api/translations  (翻译管理路由)                   │
+│  ├─ /api/translations  (翻译管理路由)                   │
+│  └─ /api/logs          (日志查询路由)                   │
 ├─────────────────────────────────────────────────────────┤
 │  Service 层 (业务逻辑)                                  │
 │  ├─ AuthService         (认证服务)                      │
 │  ├─ BusinessTagService  (业务标签服务)                  │
 │  ├─ LangTagService      (语言标签服务)                  │
-│  └─ TranslationService  (翻译服务)                      │
+│  ├─ TranslationService  (翻译服务)                      │
+│  └─ ApiLogService       (API 日志服务)                  │
 ├─────────────────────────────────────────────────────────┤
 │  Database 层 (数据访问)                                │
 │  └─ Drizzle ORM + MySQL                                │
@@ -135,6 +150,25 @@ i18ns-fastify/
 - 网络连接正常
 - 数据库服务可用
 - 如果验证失败，应用将自动退出并显示错误信息
+
+#### 📊 API 日志记录
+
+系统自动记录所有 API 操作，提供完整的审计追踪：
+- **自动记录**：使用 Fastify 插件自动拦截所有 API 请求
+- **操作人追踪**：自动从 JWT token 中提取用户 email
+- **灵活配置**：可配置需要记录的 HTTP 方法和排除的路径
+- **无侵入性**：日志记录失败不影响主业务流程
+- **查询接口**：提供日志查询 API，支持分页
+
+**记录内容：**
+- 接口路径
+- HTTP 方法 (POST, PUT, PATCH, DELETE, GET 等)
+- 操作人 email (有 JWT token 时)
+- 操作时间
+
+**默认配置：**
+- 记录方法：GET, POST, PUT, PATCH, DELETE
+- 排除路径：`/api/auth/login`, `/api/auth/register`
 
 ## 数据库设计
 
@@ -180,6 +214,16 @@ i18ns-fastify/
 | business_tag_id | INT (FK) | 关联的业务标签 ID |
 | translations | JSON | 翻译内容（多语言） |
 
+#### 5. api_logs（API 日志表）
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | INT (PK, AI) | 日志 ID |
+| path | VARCHAR(500) | 接口路径 |
+| method | VARCHAR(10) | HTTP 方法 |
+| operator | VARCHAR(255) | 操作人 email（可为空） |
+| operated_at | TIMESTAMP | 操作时间 |
+
 **translations 字段示例：**
 ```json
 {
@@ -201,6 +245,7 @@ i18ns-fastify/
 ┌─────────────────┐
 │     users       │
 │  用户表          │
+│  (认证用户)      │
 └─────────────────┘
 
 ┌─────────────────┐         ┌─────────────────┐
@@ -208,10 +253,11 @@ i18ns-fastify/
 │  业务标签表      │◄────────│  翻译表          │
 └─────────────────┘         └─────────────────┘
 
-┌─────────────────┐
-│   lang_tags     │
-│  语言标签表      │
-└─────────────────┘
+┌─────────────────┐         ┌─────────────────┐
+│   lang_tags     │         │   api_logs      │
+│  语言标签表      │         │  API日志表       │
+└─────────────────┘         │  (操作审计)      │
+                            └─────────────────┘
 ```
 
 ## 快速开始
@@ -622,6 +668,12 @@ server {
 | DELETE | `/api/translations/:id` | 删除翻译 | ✅ |
 | GET | `/api/translations/export/json` | 导出翻译为 JSON | ✅ |
 
+#### API 日志接口
+
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|------|
+| GET | `/api/logs` | 获取API日志列表（分页） | ❌ |
+
 ### 使用示例
 
 **1. 注册用户**
@@ -678,6 +730,40 @@ curl -X POST http://localhost:3000/api/translations \
 ```bash
 curl -X GET "http://localhost:3000/api/translations/export/json?business_tag_id=1" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+**6. 查询 API 日志**
+```bash
+# 查询最近的日志（分页）
+curl -X GET "http://localhost:3000/api/logs?page=1&limit=20"
+
+# 响应示例
+{
+  "statusCode": 200,
+  "message": "API logs retrieved successfully",
+  "result": {
+    "data": [
+      {
+        "id": 1,
+        "path": "/api/lang-tags",
+        "method": "POST",
+        "operator": "user@example.com",
+        "operatedAt": "2025-10-13T15:20:38.000Z"
+      },
+      {
+        "id": 2,
+        "path": "/api/translations/1",
+        "method": "PUT",
+        "operator": "admin@example.com",
+        "operatedAt": "2025-10-13T15:21:00.000Z"
+      }
+    ],
+    "total": 50,
+    "page": 1,
+    "limit": 20,
+    "totalPages": 3
+  }
+}
 ```
 
 ## 开发脚本
@@ -790,10 +876,24 @@ pnpm run dev
    - 连接失败时自动退出并显示错误信息
    - 避免在数据库不可用时启动应用
 
-3. **改进的开发体验**
+3. **API 日志记录系统**
+   - 使用 Fastify 插件自动记录所有 API 操作
+   - 支持操作人追踪（从 JWT token 提取）
+   - 可配置记录的 HTTP 方法和排除路径
+   - 提供日志查询接口，支持分页
+   - 完全无侵入，不影响主业务流程
+
+4. **插件化架构**
+   - 使用 `fastify-plugin` 实现可复用的插件
+   - 数据库验证插件
+   - API 日志记录插件
+   - 插件作用于全局，支持钩子和装饰器
+
+5. **改进的开发体验**
    - 自动终止占用端口的进程
    - 彩色日志输出，便于调试
    - 清晰的启动信息和状态提示
+   - 模块化的项目结构
 
 ## 贡献指南
 
