@@ -1,4 +1,4 @@
-import { ENV } from './config/env'
+import { ENV } from './env_config/env'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'

@@ -10,15 +10,15 @@ export class ApiLogService {
     async findAll(paginationDto: PaginationDto) {
         // 确保转换为数字类型
         const page = Number(paginationDto.page)
-        const limit = Number(paginationDto.limit)
-        const offset = (page - 1) * limit
+        const pageSize = Number(paginationDto.pageSize)
+        const offset = (page - 1) * pageSize
 
         const [data, total] = await Promise.all([
             db
                 .select()
                 .from(apiLogTable)
                 .orderBy(desc(apiLogTable.operatedAt))
-                .limit(limit)
+                .limit(pageSize)
                 .offset(offset),
             db.select({ count: sql<number>`count(*)` }).from(apiLogTable),
         ])
@@ -27,8 +27,8 @@ export class ApiLogService {
             data,
             total: total[0]?.count ?? 0,
             page,
-            limit,
-            totalPages: Math.ceil((total[0]?.count ?? 0) / limit),
+            pageSize,
+            totalPages: Math.ceil((total[0]?.count ?? 0) / pageSize),
         }
     }
 
@@ -59,7 +59,7 @@ export class ApiLogService {
     /**
      * 根据路径统计日志数量
      */
-    async countByPath(limit: number = 10) {
+    async countByPath(pageSize: number = 10) {
         return await db
             .select({
                 path: apiLogTable.path,
@@ -68,7 +68,7 @@ export class ApiLogService {
             .from(apiLogTable)
             .groupBy(apiLogTable.path)
             .orderBy(sql`count(*) DESC`)
-            .limit(limit)
+            .limit(pageSize)
     }
 }
 

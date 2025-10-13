@@ -8,14 +8,14 @@ export interface ApiLog {
 
 export interface PaginationDto {
     page: number
-    limit: number
+    pageSize: number
 }
 
 export interface PaginatedResponse<T> {
     data: T[]
     total: number
     page: number
-    limit: number
+    pageSize: number
     totalPages: number
 }
 

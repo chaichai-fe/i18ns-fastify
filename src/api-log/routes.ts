@@ -31,7 +31,7 @@ export async function apiLogRoutes(fastify: FastifyInstance) {
                             minimum: 1,
                             description: '页码',
                         },
-                        limit: {
+                        pageSize: {
                             type: 'number',
                             minimum: 1,
                             maximum: 100,
@@ -63,7 +63,7 @@ export async function apiLogRoutes(fastify: FastifyInstance) {
                                     },
                                     total: { type: 'number' },
                                     page: { type: 'number' },
-                                    limit: { type: 'number' },
+                                    pageSize: { type: 'number' },
                                     totalPages: { type: 'number' },
                                 },
                             },
@@ -81,8 +81,8 @@ export async function apiLogRoutes(fastify: FastifyInstance) {
         },
         async (request, reply) => {
             try {
-                const { page = 1, limit = 20 } = request.query
-                const result = await apiLogService.findAll({ page, limit })
+                const { page = 1, pageSize = 20 } = request.query
+                const result = await apiLogService.findAll({ page, pageSize })
                 return reply.status(200).send({
                     statusCode: 200,
                     message: 'API logs retrieved successfully',
