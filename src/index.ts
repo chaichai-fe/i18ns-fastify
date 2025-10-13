@@ -51,7 +51,10 @@ async function startApplication() {
         servers: [
           {
             url: `http://localhost:${ENV.PORT}`,
-            description: ENV.NODE_ENV === 'production' ? 'Production server' : 'Development server',
+            description:
+              ENV.NODE_ENV === 'production'
+                ? 'Production server'
+                : 'Development server',
           },
         ],
         components: {
@@ -82,7 +85,7 @@ async function startApplication() {
         filter: true,
         tryItOutEnabled: true,
         // 持久化授权
-        persistAuthorization: true
+        persistAuthorization: true,
       },
       staticCSP: true,
       transformStaticCSP: (header: string) => header,
@@ -108,7 +111,7 @@ async function startApplication() {
 
     console.log(`🚀 Translation API 运行中: http://${ENV.HOST}:${ENV.PORT}`)
     console.log(`📚 API 文档: http://${ENV.HOST}:${ENV.PORT}/docs`)
-    console.log(`🌍 环境: ${ENV.NODE_ENV}`)
+    console.log(`🌍 当前环境: ${ENV.NODE_ENV}`)
   } catch (error) {
     console.error('💥 应用启动失败:', error)
     process.exit(1)
