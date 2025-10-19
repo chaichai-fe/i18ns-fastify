@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { TranslationsService } from './service'
 import { CreateTranslationDto, Translation } from './types'
+import { translationsSchemas } from './schema'
 
 const translationsService = new TranslationsService()
 
@@ -17,30 +18,7 @@ export async function translationsRoutes(fastify: FastifyInstance) {
   }>(
     '/',
     {
-      schema: {
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-              result: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number' },
-                    name: { type: 'string' },
-                    description: { type: 'string' },
-                    business_tag_id: { type: 'number' },
-                    translations: { type: 'object' },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      schema: translationsSchemas.findAll,
     },
     async (_, reply) => {
       const result = await translationsService.findAll()
@@ -69,61 +47,7 @@ export async function translationsRoutes(fastify: FastifyInstance) {
   }>(
     '/',
     {
-      schema: {
-        body: {
-          type: 'object',
-          required: ['name', 'description', 'business_tag_id', 'translations'],
-          properties: {
-            name: {
-              type: 'string',
-              minLength: 2,
-              maxLength: 100,
-            },
-            description: {
-              type: 'string',
-              minLength: 5,
-              maxLength: 500,
-            },
-            business_tag_id: {
-              type: 'number',
-              minimum: 1,
-            },
-            translations: {
-              type: 'object',
-              additionalProperties: true,
-            },
-          },
-        },
-        response: {
-          201: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-              result: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number' },
-                    name: { type: 'string' },
-                    description: { type: 'string' },
-                    business_tag_id: { type: 'number' },
-                    translations: { type: 'object' },
-                  },
-                },
-              },
-            },
-          },
-          400: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-            },
-          },
-        },
-      },
+      schema: translationsSchemas.create,
     },
     async (request, reply) => {
       try {
@@ -159,43 +83,7 @@ export async function translationsRoutes(fastify: FastifyInstance) {
   }>(
     '/:id',
     {
-      schema: {
-        params: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-          },
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-              result: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number' },
-                    name: { type: 'string' },
-                    description: { type: 'string' },
-                    business_tag_id: { type: 'number' },
-                    translations: { type: 'object' },
-                  },
-                },
-              },
-            },
-          },
-          404: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-            },
-          },
-        },
-      },
+      schema: translationsSchemas.findById,
     },
     async (request, reply) => {
       try {
@@ -233,67 +121,7 @@ export async function translationsRoutes(fastify: FastifyInstance) {
   }>(
     '/:id',
     {
-      schema: {
-        params: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-          },
-        },
-        body: {
-          type: 'object',
-          required: ['name', 'description', 'business_tag_id', 'translations'],
-          properties: {
-            name: {
-              type: 'string',
-              minLength: 2,
-              maxLength: 100,
-            },
-            description: {
-              type: 'string',
-              minLength: 5,
-              maxLength: 500,
-            },
-            business_tag_id: {
-              type: 'number',
-              minimum: 1,
-            },
-            translations: {
-              type: 'object',
-              additionalProperties: true,
-            },
-          },
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-              result: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number' },
-                    name: { type: 'string' },
-                    description: { type: 'string' },
-                    business_tag_id: { type: 'number' },
-                    translations: { type: 'object' },
-                  },
-                },
-              },
-            },
-          },
-          400: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-            },
-          },
-        },
-      },
+      schema: translationsSchemas.update,
     },
     async (request, reply) => {
       try {
@@ -330,40 +158,7 @@ export async function translationsRoutes(fastify: FastifyInstance) {
   }>(
     '/:id',
     {
-      schema: {
-        params: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-          },
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-              result: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  name: { type: 'string' },
-                  description: { type: 'string' },
-                  business_tag_id: { type: 'number' },
-                  translations: { type: 'object' },
-                },
-              },
-            },
-          },
-          404: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-            },
-          },
-        },
-      },
+      schema: translationsSchemas.remove,
     },
     async (request, reply) => {
       try {
@@ -425,44 +220,7 @@ export async function translationsRoutes(fastify: FastifyInstance) {
           })
         }
       },
-      schema: {
-        headers: {
-          type: 'object',
-          properties: {
-            authorization: {
-              type: 'string',
-              pattern: '^Bearer .+',
-            },
-          },
-          required: ['authorization'],
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              id: { type: 'number' },
-              name: { type: 'string' },
-              description: { type: 'string' },
-              business_tag_id: { type: 'number' },
-              translations: { type: 'object' },
-            },
-          },
-          401: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-            },
-          },
-          500: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'number' },
-              message: { type: 'string' },
-            },
-          },
-        },
-      },
+      schema: translationsSchemas.exportJson,
     },
     async (request, reply) => {
       try {

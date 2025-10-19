@@ -77,16 +77,14 @@ async function startApplication() {
             },
           },
         },
-        security: [
-          {
-            bearerAuth: [],
-          },
-        ],
       },
     })
 
     await fastify.register(swaggerUi, {
       routePrefix: '/docs',
+      theme: {
+        title: 'I18n Translation API Documentation',
+      },
       uiConfig: {
         docExpansion: 'list',
         deepLinking: false,
