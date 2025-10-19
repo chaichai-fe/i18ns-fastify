@@ -1,5 +1,8 @@
 export const businessTagSchemas = {
   findAll: {
+    tags: ['business-tag'],
+    summary: '获取业务标签列表',
+    description: '获取业务标签列表',
     querystring: {
       type: 'object',
       properties: {
@@ -47,6 +50,9 @@ export const businessTagSchemas = {
     },
   },
   create: {
+    tags: ['business-tag'],
+    summary: '创建业务标签',
+    description: '创建业务标签',
     body: {
       type: 'object',
       required: ['name', 'description'],
@@ -94,6 +100,9 @@ export const businessTagSchemas = {
     },
   },
   findById: {
+    tags: ['business-tag'],
+    summary: '获取业务标签详情',
+    description: '获取业务标签详情',
     params: {
       type: 'object',
       properties: {
@@ -131,6 +140,9 @@ export const businessTagSchemas = {
     },
   },
   update: {
+    tags: ['business-tag'],
+    summary: '更新业务标签',
+    description: '更新业务标签',
     params: {
       type: 'object',
       properties: {
@@ -184,6 +196,9 @@ export const businessTagSchemas = {
     },
   },
   remove: {
+    tags: ['business-tag'],
+    summary: '删除业务标签',
+    description: '删除业务标签',
     params: {
       type: 'object',
       properties: {

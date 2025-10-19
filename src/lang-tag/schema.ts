@@ -1,5 +1,8 @@
 export const langTagSchemas = {
   findAll: {
+    tags: ['lang-tag'],
+    summary: '获取语言标签列表',
+    description: '获取语言标签列表',
     querystring: {
       type: 'object',
       properties: {
@@ -47,6 +50,9 @@ export const langTagSchemas = {
     },
   },
   create: {
+    tags: ['lang-tag'],
+    summary: '创建语言标签',
+    description: '创建语言标签',
     body: {
       type: 'object',
       required: ['name', 'description'],
@@ -94,6 +100,9 @@ export const langTagSchemas = {
     },
   },
   findById: {
+    tags: ['lang-tag'],
+    summary: '获取语言标签详情',
+    description: '获取语言标签详情',
     params: {
       type: 'object',
       properties: {
@@ -131,6 +140,9 @@ export const langTagSchemas = {
     },
   },
   update: {
+    tags: ['lang-tag'],
+    summary: '更新语言标签',
+    description: '更新语言标签',
     params: {
       type: 'object',
       properties: {
@@ -184,6 +196,9 @@ export const langTagSchemas = {
     },
   },
   remove: {
+    tags: ['lang-tag'],
+    summary: '删除语言标签',
+    description: '删除语言标签',
     params: {
       type: 'object',
       properties: {

@@ -1,5 +1,8 @@
 export const authSchemas = {
   register: {
+    tags: ['auth'],
+    summary: '用户注册',
+    description: '注册新用户账号',
     body: {
       type: 'object',
       required: ['name', 'email', 'password'],
@@ -52,6 +55,9 @@ export const authSchemas = {
     },
   },
   login: {
+    tags: ['auth'],
+    summary: '用户登录',
+    description: '用户登录获取访问令牌',
     body: {
       type: 'object',
       required: ['email', 'password'],

@@ -1,5 +1,8 @@
 export const translationsSchemas = {
   findAll: {
+    tags: ['translations'],
+    summary: '获取翻译列表',
+    description: '获取翻译列表',
     response: {
       200: {
         type: 'object',
@@ -24,6 +27,9 @@ export const translationsSchemas = {
     },
   },
   create: {
+    tags: ['translations'],
+    summary: '创建翻译',
+    description: '创建翻译',
     body: {
       type: 'object',
       required: ['name', 'description', 'business_tag_id', 'translations'],
@@ -79,6 +85,9 @@ export const translationsSchemas = {
     },
   },
   findById: {
+    tags: ['translations'],
+    summary: '获取翻译详情',
+    description: '获取翻译详情',
     params: {
       type: 'object',
       properties: {
@@ -116,6 +125,9 @@ export const translationsSchemas = {
     },
   },
   update: {
+    tags: ['translations'],
+    summary: '更新翻译',
+    description: '更新翻译',
     params: {
       type: 'object',
       properties: {
@@ -177,6 +189,9 @@ export const translationsSchemas = {
     },
   },
   remove: {
+    tags: ['translations'],
+    summary: '删除翻译',
+    description: '删除翻译',
     params: {
       type: 'object',
       properties: {
@@ -211,6 +226,9 @@ export const translationsSchemas = {
     },
   },
   exportJson: {
+    tags: ['translations'],
+    summary: '导出翻译为 JSON',
+    description: '导出翻译为 JSON',
     headers: {
       type: 'object',
       properties: {

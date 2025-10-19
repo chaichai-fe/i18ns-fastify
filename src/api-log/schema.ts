@@ -1,5 +1,8 @@
 export const apiLogSchemas = {
   findAll: {
+    tags: ['api-log'],
+    summary: '获取 API 日志列表',
+    description: '获取 API 日志列表',
     querystring: {
       type: 'object',
       properties: {
