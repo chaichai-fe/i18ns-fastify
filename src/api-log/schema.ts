@@ -58,4 +58,60 @@ export const apiLogSchemas = {
       },
     },
   },
+  clearOld: {
+    tags: ['api-log'],
+    summary: '清除六个月之前的日志',
+    description: '删除六个月之前的所有API日志记录',
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'number' },
+          message: { type: 'string' },
+          result: {
+            type: 'object',
+            properties: {
+              deletedCount: { type: 'number' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+      400: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'number' },
+          message: { type: 'string' },
+        },
+      },
+    },
+  },
+  clearAll: {
+    tags: ['api-log'],
+    summary: '清除所有日志',
+    description: '删除所有API日志记录',
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'number' },
+          message: { type: 'string' },
+          result: {
+            type: 'object',
+            properties: {
+              deletedCount: { type: 'number' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+      400: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'number' },
+          message: { type: 'string' },
+        },
+      },
+    },
+  },
 }
