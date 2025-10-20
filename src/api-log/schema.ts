@@ -1,4 +1,6 @@
-export const apiLogSchemas = {
+import { FastifySchema } from "fastify";
+
+export const apiLogSchemas: Record<string, FastifySchema> = {
   findAll: {
     tags: ['api-log'],
     summary: '获取 API 日志列表',

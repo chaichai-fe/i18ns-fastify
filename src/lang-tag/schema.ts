@@ -1,4 +1,5 @@
-export const langTagSchemas = {
+import { FastifySchema } from "fastify";
+export const langTagSchemas: Record<string, FastifySchema> = {
   findAll: {
     tags: ['lang-tag'],
     summary: '获取语言标签列表',

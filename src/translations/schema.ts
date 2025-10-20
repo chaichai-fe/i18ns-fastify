@@ -1,4 +1,5 @@
-export const translationsSchemas = {
+import { FastifySchema } from "fastify";
+export const translationsSchemas: Record<string, FastifySchema> = {
   findAll: {
     tags: ['translations'],
     summary: '获取翻译列表',

@@ -1,4 +1,6 @@
-export const businessTagSchemas = {
+import { FastifySchema } from "fastify";
+
+export const businessTagSchemas: Record<string, FastifySchema> = {
   findAll: {
     tags: ['business-tag'],
     summary: '获取业务标签列表',

@@ -1,4 +1,6 @@
-export const authSchemas = {
+import { FastifySchema } from "fastify";
+
+export const authSchemas: Record<string, FastifySchema> = {
   register: {
     tags: ['auth'],
     summary: '用户注册',
