@@ -9,7 +9,7 @@ export class AuthService {
     createUserDto: CreateUserDto,
     signJWT: (payload: any) => string
   ): Promise<AuthResponse> {
-    // Check if user already exists
+    // Check if user email already exists
     const existingUser = await db
       .select()
       .from(userTable)

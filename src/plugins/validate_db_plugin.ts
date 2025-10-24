@@ -18,10 +18,10 @@ export const validateDatabasePlugin: FastifyPluginAsync<DatabasePluginOptions> =
 ) => {
     const connectionString = options.connectionString ?? process.env.DATABASE_URL
 
-    fastify.log.info(`🔄 正在验证数据库连接...${connectionString}`)
+    fastify.log.info(`🔄 Database connection string: ${connectionString}`)
 
     if (!connectionString) {
-        throw new Error('❌ DATABASE_URL 环境变量未设置')
+        throw new Error('❌ DATABASE_URL environment variable is not set')
     }
 
     try {
@@ -34,10 +34,10 @@ export const validateDatabasePlugin: FastifyPluginAsync<DatabasePluginOptions> =
         // 关闭测试连接
         await connection.end()
 
-        fastify.log.info('✅ 数据库连接验证成功')
+        fastify.log.info('✅ Database connection validation successful')
     } catch (error) {
-        fastify.log.error('❌ 数据库连接验证失败')
-        throw new Error(`数据库连接验证失败: ${error}`)
+        fastify.log.error('❌ Database connection validation failed')
+        throw new Error(`Database connection validation failed: ${error}`)
     }
 }
 

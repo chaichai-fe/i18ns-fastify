@@ -30,7 +30,6 @@ const apiLogPluginCore: FastifyPluginAsync<ApiLogPluginOptions> = async (
     fastify,
     options
 ) => {
-    console.log('apiLogPlugin 已注册', options)
     // 默认排除登录和注册接口
     const excludePaths = options.excludePaths ?? [
         '/api/auth/login',
@@ -42,7 +41,7 @@ const apiLogPluginCore: FastifyPluginAsync<ApiLogPluginOptions> = async (
 
     const apiLogService = new ApiLogService()
 
-    fastify.log.info('✅ API 日志记录插件已注册')
+    fastify.log.info('✅ API log recording plugin registered')
 
     // 使用 onResponse 钩子记录 API 调用
     fastify.addHook('onResponse', async (request, reply) => {

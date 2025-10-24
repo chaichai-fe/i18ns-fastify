@@ -15,7 +15,7 @@ import { apiLogRoutes } from './api-log/routes'
 // 应用启动函数
 async function startApplication() {
   try {
-    console.log('🚀 Translation API 正在启动...')
+    console.log('🚀 Translation API starting...')
 
     // 创建 Fastify 应用
     const fastify = Fastify({
@@ -33,7 +33,7 @@ async function startApplication() {
     // 注册 API 日志记录插件
     await fastify.register(apiLogPlugin, {
       // 排除登录和注册接口（默认值，可根据需要修改）
-      excludePaths: ['/api/auth/login', '/api/auth/register'],
+      excludePaths: ['/api/auth/login', '/api/auth/register', '/api/logs'],
       // 记录的 HTTP 方法（默认值，可根据需要修改）
       methodsToLog: ['POST', 'PUT', 'PATCH', 'DELETE'],
     })
@@ -118,11 +118,11 @@ async function startApplication() {
     // 启动服务器
     await fastify.listen({ port: ENV.PORT, host: ENV.HOST })
 
-    console.log(`🚀 Translation API 运行中: http://${ENV.HOST}:${ENV.PORT}`)
-    console.log(`📚 API 文档: http://${ENV.HOST}:${ENV.PORT}/docs`)
-    console.log(`🌍 当前环境: ${ENV.NODE_ENV}`)
+    console.log(`🚀 Translation API running: http://${ENV.HOST}:${ENV.PORT}`)
+    console.log(`📚 API documentation: http://${ENV.HOST}:${ENV.PORT}/docs`)
+    console.log(`🌍 Current environment: ${ENV.NODE_ENV}`)
   } catch (error) {
-    console.error('💥 应用启动失败:', error)
+    console.error('💥 Application startup failed:', error)
     process.exit(1)
   }
 }
