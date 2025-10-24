@@ -41,8 +41,6 @@ const apiLogPluginCore: FastifyPluginAsync<ApiLogPluginOptions> = async (
 
     const apiLogService = new ApiLogService()
 
-    fastify.log.info('✅ API log recording plugin registered')
-
     // 使用 onResponse 钩子记录 API 调用
     fastify.addHook('onResponse', async (request, reply) => {
         console.log('onResponse', request, reply)
